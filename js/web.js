@@ -9,7 +9,8 @@ const forms=document.querySelector('.orderInfo-form');
 const inputs = document.querySelectorAll('input[type=text],input[type=tel],input[type=email],select');
 const messages = document.querySelectorAll('[data-message]');
 const totalPrices=document.querySelector('.total-price');
-let customerInfo = document.querySelectorAll('.orderInfo-input');
+const customerInfo = document.querySelectorAll('.orderInfo-input');
+const orderInfoMessage=document.querySelectorAll('.orderInfo-message'); 
 
 //渲染商品資訊
 function showProduct(data){
@@ -38,7 +39,7 @@ function getProduct() {
       ldld.off();
     })
     .catch(function (error) {
-      console.log(error);
+      alert(error.message);
     })
 }
 //取得購物車內的商品資料
@@ -51,14 +52,14 @@ function getCart(){
     showCart(cartAry,totalPrice);
   })
   .catch(function (error) {
-    console.log(error);
+    alert(error.message);
   })
 }
 //渲染購物車內的商品資訊
 function showCart(data,totalPrice){
   let str='';
   // console.log(data.length);
-  if(data.length==0){
+  if(data.length===0){
     str='<tr><td colspan="8">目前購物車內無商品</td></tr>';    
     totalPrice=0;
     cartListfooter.style.display='none';
@@ -124,7 +125,7 @@ function addCart(id){
 
     })
     .catch(function (error) {
-      console.log(error);
+      alert(error.message);
     })
 }
 //select標籤選項資料切換
@@ -150,11 +151,11 @@ function action(e){
   e.preventDefault();
   let cartId=e.target.getAttribute('data-id');
   let className = e.target.getAttribute('class');
-  if(cartId == null){
+  if(cartId === null){
     // console.log(num,cartId);
     return;
   }
-  else if(className == "material-icons cartAmount-icon"){
+  else if(className === "material-icons cartAmount-icon"){
     let num=Number(e.target.getAttribute('data-num'));
     editCartNum(num,cartId);
     return;
@@ -175,7 +176,7 @@ function deleteItem(cartId){
       ldld.off();
     })
     .catch(function(error){
-      console.log(error);
+      alert(error.message);
     })
 }
 //編輯購物車內商品數量
@@ -197,12 +198,14 @@ function editCartNum(num,id){
       ldld.off();
     })
     .catch(function(error){
-      console.log(error);
+      alert(error.message);
+
     })
     // ${url}/${api_path}/carts/}
   }
   else{
-    alert("數量不能小於1")
+    alert("數量不能小於1");
+    ldld.off();
     return;
   }
 }
@@ -226,7 +229,7 @@ function deleteALLItem(e){
       ldld.off();
     })
     .catch(function (error) {
-      console.log(error);
+      alert(error.message);
     })
 }
 productList.addEventListener('click',addCartItem);
@@ -254,6 +257,10 @@ const constraints = {
     presence:{
       message: "必填欄位"
     },
+    format: {
+      pattern: /^[09]{2}\d{8}$/,
+      message: "需以 09 開頭，共 10 碼"
+   },
     length: {
       minimum: 8,
       message: "號碼需超過 8 碼"
@@ -309,7 +316,8 @@ function addOrder(){
       getCart();
     })
     .catch(function(error){
-      console.log(error.response.data);
+      alert(error.message);
+
     })
 }
 forms.addEventListener("submit", verification, false);
@@ -322,6 +330,9 @@ function verification(e) {
     showErrors(errors);
   } else {
     // 如果沒有錯誤，送出表單
+    orderInfoMessage.forEach(function(item){
+      item.textContent='';
+    })
     addOrder();
   }
 }

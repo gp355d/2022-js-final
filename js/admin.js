@@ -1,12 +1,12 @@
 let oederAry = [];
 const orderList = document.querySelector('.orderTableWrap tbody');
 const deleteAllOrder = document.querySelector('.discardAllBtn');
+const categories=document.querySelector('.categories');
+const revenue=document.querySelector('.revenue');
 deleteAllOrder.style.display = 'none';
-const acesstoken={
-  headers: {
-  'Authorization': token
-  }
-}
+categories.style.display='none';
+revenue.style.display='none';
+
 //取得訂單來源資料
 function getOrder() {
   ldld.on();
@@ -16,24 +16,25 @@ function getOrder() {
       // console.log(response.data);
       oederAry = response.data.orders;
       showOrder(oederAry)
-      c3v1();
-      c3v2();
+      c3RenderCategory();
+      c3RenderRate();
       ldld.off();
     })
     .catch(function (error) {
-      // handle error
-      console.log(error);
+      alert(error.message);
     })
 }
 //渲染訂單資訊
 function showOrder(data) {
   let str = '';
   let str2='';
-  if (data.length == 0) {
+  if (data.length === 0) {
     str = `<td colspan="8">目前無訂單資料</td>`;
     deleteAllOrder.style.display = 'none';
   }
   else {
+    categories.style.display='block';
+    revenue.style.display='block';
     deleteAllOrder.style.display = 'block';
     // console.log(data[0].products);
     data.forEach(function (item) {
@@ -97,6 +98,9 @@ function changeOrder(orderId,status){
       showOrder(response.data.orders);
       alert('訂單處理狀態已切換');
     })
+    .catch(function (error) {
+      alert(error.message);
+    })
 }
 //刪除全部訂單
 function deleteAllOrders() {
@@ -111,10 +115,14 @@ function deleteAllOrders() {
       // console.log(response.data);
       oederAry = response.data.orders;
       showOrder(oederAry);
-      c3v1();
+      c3RenderCategory();
+      c3RenderRate();
       alert('全部訂單皆已刪除');
       deleteAllOrder.style.display = 'none';
       ldld.off();
+    })
+    .catch(function (error) {
+      alert(error.message);
     })
 }
 //判斷使用者選取行為
@@ -145,9 +153,13 @@ function action(e) {
       // console.log(response.data);
       oederAry = response.data.orders;
       showOrder(oederAry);
-      c3v1();
+      c3RenderCategory();
+      c3RenderRate();
       alert('該筆訂單已刪除');
       ldld.off();
+    })
+    .catch(function (error) {
+      alert(error.message);
     })
   }
 }
@@ -157,7 +169,7 @@ function init() {
 init();
 
 //渲染C3商品類別的資料
-function c3v1(){
+function c3RenderCategory(){
   //資料蒐集
   let obj={};
   oederAry.forEach(function(item){
@@ -186,7 +198,7 @@ function c3v1(){
 }
 
 //渲染商品前3名及其他(第4名以後)販售資料
-function c3v2(){
+function c3RenderRate(){
   //資料蒐集
   let obj={};
   oederAry.forEach(function(item){
